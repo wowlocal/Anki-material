@@ -6,7 +6,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function VerbCard({ verb, onNext }) {
   const [showForms, setShowForms] = useState(false);
@@ -32,33 +32,39 @@ function VerbCard({ verb, onNext }) {
         <Typography variant="h4" component="div" gutterBottom align="center">
           {verb.infinitive}
         </Typography>
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: showForms ? 1 : 0, height: showForms ? 'auto' : 0 }}
-          transition={{ duration: 0.3 }}
-        >
+        <AnimatePresence>
           {showForms && (
-            <Grid container spacing={2} justifyContent="center" sx={{ mb: 2 }}>
-              <Grid item>
-                <Chip label={`Simple Past: ${verb.simplePast}`} color="primary" />
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Grid container spacing={2} justifyContent="center" sx={{ mb: 2 }}>
+                <Grid item>
+                  <Chip label={`Simple Past: ${verb.simplePast}`} color="primary" />
+                </Grid>
+                <Grid item>
+                  <Chip label={`Past Participle: ${verb.pastParticiple}`} color="secondary" />
+                </Grid>
               </Grid>
-              <Grid item>
-                <Chip label={`Past Participle: ${verb.pastParticiple}`} color="secondary" />
-              </Grid>
-            </Grid>
+            </motion.div>
           )}
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: showMeaning ? 1 : 0, height: showMeaning ? 'auto' : 0 }}
-          transition={{ duration: 0.3 }}
-        >
+        </AnimatePresence>
+        <AnimatePresence>
           {showMeaning && (
-            <Typography variant="body1" align="center" sx={{ mt: 2 }}>
-              {verb.meaning}
-            </Typography>
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Typography variant="body1" align="center" sx={{ mt: 2 }}>
+                {verb.meaning}
+              </Typography>
+            </motion.div>
           )}
-        </motion.div>
+        </AnimatePresence>
       </CardContent>
       <CardActions>
         <Button

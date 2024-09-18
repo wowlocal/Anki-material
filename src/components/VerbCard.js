@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -13,6 +13,11 @@ function VerbCard({ verb, onNext }) {
   const [showForms, setShowForms] = useState(false);
   const [showMeaning, setShowMeaning] = useState(false);
 
+  useEffect(() => {
+    setShowForms(false);
+    setShowMeaning(false);
+  }, [verb]);
+
   const handleShowForms = () => {
     setShowForms(true);
   };
@@ -22,8 +27,6 @@ function VerbCard({ verb, onNext }) {
   };
 
   const handleNextVerb = () => {
-    setShowForms(false);
-    setShowMeaning(false);
     onNext();
   };
 
@@ -37,6 +40,7 @@ function VerbCard({ verb, onNext }) {
           <AnimatePresence>
             {showForms && (
               <motion.div
+                key="forms"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
@@ -57,6 +61,7 @@ function VerbCard({ verb, onNext }) {
           <AnimatePresence>
             {showMeaning && (
               <motion.div
+                key="meaning"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}

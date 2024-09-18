@@ -24,12 +24,14 @@ const theme = createTheme({
 
 function App() {
   const [currentVerb, setCurrentVerb] = useState(null);
+  const [key, setKey] = useState(0);
 
   useEffect(() => {
     getRandomVerb();
   }, []);
 
   const getRandomVerb = () => {
+    setKey(prevKey => prevKey + 1);
     const randomIndex = Math.floor(Math.random() * verbList.length);
     setCurrentVerb(verbList[randomIndex]);
   };
@@ -45,7 +47,7 @@ function App() {
           <AnimatePresence mode="wait">
             {currentVerb && (
               <motion.div
-                key={currentVerb.infinitive}
+                key={key}
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -50 }}

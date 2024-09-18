@@ -40,7 +40,7 @@ function App() {
       <Container maxWidth="sm">
         <Box sx={{ my: 4 }}>
           <Typography variant="h3" component="h1" gutterBottom align="center">
-            Learn English Verbs
+
           </Typography>
           <AnimatePresence mode="wait">
             {currentVerb && (

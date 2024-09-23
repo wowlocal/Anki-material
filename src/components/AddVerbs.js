@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Button, Container, TextField, Typography, Grid } from '@mui/material';
+import { saveAs } from 'file-saver';
 import verbList from '../data/verbList';
 
 const AddVerbs = () => {
@@ -8,6 +9,7 @@ const AddVerbs = () => {
   const [pastParticiple, setPastParticiple] = useState('');
   const [meaning, setMeaning] = useState('');
   const [collection, setCollection] = useState('');
+  const [newVerbs, setNewVerbs] = useState([]);
 
   const handleAddVerb = () => {
     const newVerb = {
@@ -18,12 +20,17 @@ const AddVerbs = () => {
       collection,
     };
     verbList.push(newVerb);
+    setNewVerbs([...newVerbs, newVerb]);
     setInfinitive('');
     setSimplePast('');
     setPastParticiple('');
     setMeaning('');
     setCollection('');
-    alert('Verb added successfully!');
+  };
+
+  const handleExportVerbs = () => {
+    const blob = new Blob([JSON.stringify(newVerbs, null, 2)], { type: 'application/json' });
+    saveAs(blob, 'new_verbs.json');
   };
 
   return (
@@ -81,6 +88,16 @@ const AddVerbs = () => {
               onClick={handleAddVerb}
             >
               Add Verb
+            </Button>
+          </Grid>
+          <Grid item xs={12}>
+            <Button
+              fullWidth
+              variant="contained"
+              color="secondary"
+              onClick={handleExportVerbs}
+            >
+              Export Verbs
             </Button>
           </Grid>
         </Grid>

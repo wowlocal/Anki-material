@@ -61,16 +61,17 @@ function App() {
   }, [shownWords, completedCollections]);
 
   const getRandomVerb = (verbsList) => {
-    setKey(prevKey => prevKey + 1);
-    const randomIndex = Math.floor(Math.random() * verbsList.length);
-    const selectedVerb = verbsList[randomIndex];
-    setCurrentVerb(selectedVerb);
-    if (!shownWords.includes(selectedVerb.infinitive)) {
-      setShownWords([...shownWords, selectedVerb.infinitive]);
-    }
-    if (shownWords.length + 1 === verbsList.length) {
+    const remainingVerbs = verbsList.filter(verb => !shownWords.includes(verb.infinitive));
+    if (remainingVerbs.length === 0) {
       setCompletedCollections([...completedCollections, currentCollection]);
+      setCurrentVerb(null);
+      return;
     }
+    setKey(prevKey => prevKey + 1);
+    const randomIndex = Math.floor(Math.random() * remainingVerbs.length);
+    const selectedVerb = remainingVerbs[randomIndex];
+    setCurrentVerb(selectedVerb);
+    setShownWords([...shownWords, selectedVerb.infinitive]);
   };
 
   const handleWordClick = (word) => {
@@ -81,6 +82,8 @@ function App() {
   const handleCollectionClick = (collection) => {
     setCurrentCollection(collection);
   };
+
+  const isCollectionCompleted = completedCollections.includes(currentCollection);
 
   return (
     <ThemeProvider theme={theme}>
@@ -158,16 +161,44 @@ function App() {
                         </Typography>
                         <VerbCollectionSwitcher onCollectionChange={setCurrentCollection} />
                         <AnimatePresence mode="wait">
-                          {currentVerb && (
+                          {isCollectionCompleted ? (
                             <motion.div
-                              key={key}
+                              key="completed"
                               initial={{ opacity: 0, y: 50 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: -50 }}
                               transition={{ duration: 0.5 }}
                             >
-                              <VerbCard verb={currentVerb} onNext={() => getRandomVerb(verbs)} />
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  height: '100%',
+                                  textAlign: 'center',
+                                }}
+                              >
+                                <Typography variant="h4" gutterBottom>
+                                  Collection Completed!
+                                </Typography>
+                                <Typography variant="body1">
+                                  You have reviewed all the verbs in this collection.
+                                </Typography>
+                              </Box>
                             </motion.div>
+                          ) : (
+                            currentVerb && (
+                              <motion.div
+                                key={key}
+                                initial={{ opacity: 0, y: 50 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -50 }}
+                                transition={{ duration: 0.5 }}
+                              >
+                                <VerbCard verb={currentVerb} onNext={() => getRandomVerb(verbs)} />
+                              </motion.div>
+                            )
                           )}
                         </AnimatePresence>
                       </>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
@@ -6,12 +7,17 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import ListItemButton from '@mui/material/ListItemButton';
 import Grid from '@mui/material/Grid';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { motion, AnimatePresence } from 'framer-motion';
 import VerbCard from './components/VerbCard';
 import VerbCollectionSwitcher from './components/VerbCollectionSwitcher';
+import AddVerbs from './components/AddVerbs';
 import { getVerbsByCollection } from './utils/verbUtils';
 
 const theme = createTheme({
@@ -67,68 +73,113 @@ function App() {
     }
   };
 
+  const handleWordClick = (word) => {
+    const selectedVerb = verbs.find(verb => verb.infinitive === word);
+    setCurrentVerb(selectedVerb);
+  };
+
+  const handleCollectionClick = (collection) => {
+    setCurrentCollection(collection);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Grid container>
-        <Grid item>
-          <Drawer
-            variant="permanent"
-            anchor="left"
-            sx={{
-              width: 240,
-              flexShrink: 0,
-              [`& .MuiDrawer-paper`]: { width: 240, boxSizing: 'border-box' },
-            }}
-          >
-            <Box sx={{ overflow: 'auto' }}>
-              <Typography variant="h6" component="div" sx={{ p: 2 }}>
-                Shown Words
-              </Typography>
-              <List>
-                {shownWords.map((word, index) => (
-                  <ListItem key={index}>
-                    <ListItemText primary={word} />
-                  </ListItem>
-                ))}
-              </List>
-              <Typography variant="h6" component="div" sx={{ p: 2 }}>
-                Completed Collections
-              </Typography>
-              <List>
-                {completedCollections.map((collection, index) => (
-                  <ListItem key={index}>
-                    <ListItemText primary={collection} />
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
-          </Drawer>
-        </Grid>
-        <Grid item xs>
-          <Container maxWidth="sm">
-            <Box sx={{ my: 4 }}>
-              <Typography variant="h3" component="h1" gutterBottom align="center">
-                Verb Trainer
-              </Typography>
-              <VerbCollectionSwitcher onCollectionChange={setCurrentCollection} />
-              <AnimatePresence mode="wait">
-                {currentVerb && (
-                  <motion.div
-                    key={key}
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -50 }}
-                    transition={{ duration: 0.5 }}
+      <Router>
+        <Grid container>
+          <Grid item>
+            <Drawer
+              variant="permanent"
+              anchor="left"
+              sx={{
+                width: 240,
+                flexShrink: 0,
+                [`& .MuiDrawer-paper`]: { width: 240, boxSizing: 'border-box' },
+              }}
+            >
+              <Box sx={{ overflow: 'auto' }}>
+                <Accordion>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="shown-words-content"
+                    id="shown-words-header"
                   >
-                    <VerbCard verb={currentVerb} onNext={() => getRandomVerb(verbs)} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </Box>
-          </Container>
+                    <Typography variant="h6">Shown Words</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <List>
+                      {shownWords.map((word, index) => (
+                        <ListItemButton key={index} onClick={() => handleWordClick(word)}>
+                          <ListItemText primary={word} />
+                        </ListItemButton>
+                      ))}
+                    </List>
+                  </AccordionDetails>
+                </Accordion>
+                <Accordion>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="completed-collections-content"
+                    id="completed-collections-header"
+                  >
+                    <Typography variant="h6">Collections</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <List>
+                      {completedCollections.map((collection, index) => (
+                        <ListItemButton key={index} onClick={() => handleCollectionClick(collection)}>
+                          <ListItemText primary={collection} />
+                        </ListItemButton>
+                      ))}
+                    </List>
+                  </AccordionDetails>
+                </Accordion>
+                <List>
+                  <ListItemButton component={Link} to="/">
+                    <ListItemText primary="Home" />
+                  </ListItemButton>
+                  <ListItemButton component={Link} to="/add-verbs">
+                    <ListItemText primary="Add Verbs" />
+                  </ListItemButton>
+                </List>
+              </Box>
+            </Drawer>
+          </Grid>
+          <Grid item xs>
+            <Container maxWidth="sm">
+              <Box sx={{ my: 4 }}>
+                <Routes>
+                  <Route
+                    path="/"
+                    element={
+                      <>
+                        <Typography variant="h3" component="h1" gutterBottom align="center">
+                          Verb Trainer
+                        </Typography>
+                        <VerbCollectionSwitcher onCollectionChange={setCurrentCollection} />
+                        <AnimatePresence mode="wait">
+                          {currentVerb && (
+                            <motion.div
+                              key={key}
+                              initial={{ opacity: 0, y: 50 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -50 }}
+                              transition={{ duration: 0.5 }}
+                            >
+                              <VerbCard verb={currentVerb} onNext={() => getRandomVerb(verbs)} />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </>
+                    }
+                  />
+                  <Route path="/add-verbs" element={<AddVerbs />} />
+                </Routes>
+              </Box>
+            </Container>
+          </Grid>
         </Grid>
-      </Grid>
+      </Router>
     </ThemeProvider>
   );
 }

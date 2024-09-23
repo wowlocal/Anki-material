@@ -6,7 +6,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { motion, AnimatePresence } from 'framer-motion';
 import VerbCard from './components/VerbCard';
-import verbList from './data/verbList';
+import VerbCollectionSwitcher from './components/VerbCollectionSwitcher';
+import { getVerbsByCollection } from './utils/verbUtils';
 
 const theme = createTheme({
   palette: {
@@ -25,15 +26,19 @@ const theme = createTheme({
 function App() {
   const [currentVerb, setCurrentVerb] = useState(null);
   const [key, setKey] = useState(0);
+  const [currentCollection, setCurrentCollection] = useState('movement');
+  const [verbs, setVerbs] = useState([]);
 
   useEffect(() => {
-    getRandomVerb();
-  }, []);
+    const verbsInCollection = getVerbsByCollection(currentCollection);
+    setVerbs(verbsInCollection);
+    getRandomVerb(verbsInCollection);
+  }, [currentCollection]);
 
-  const getRandomVerb = () => {
+  const getRandomVerb = (verbsList) => {
     setKey(prevKey => prevKey + 1);
-    const randomIndex = Math.floor(Math.random() * verbList.length);
-    setCurrentVerb(verbList[randomIndex]);
+    const randomIndex = Math.floor(Math.random() * verbsList.length);
+    setCurrentVerb(verbsList[randomIndex]);
   };
 
   return (
@@ -42,8 +47,9 @@ function App() {
       <Container maxWidth="sm">
         <Box sx={{ my: 4 }}>
           <Typography variant="h3" component="h1" gutterBottom align="center">
-
+            Verb Trainer
           </Typography>
+          <VerbCollectionSwitcher onCollectionChange={setCurrentCollection} />
           <AnimatePresence mode="wait">
             {currentVerb && (
               <motion.div
@@ -53,7 +59,7 @@ function App() {
                 exit={{ opacity: 0, y: -50 }}
                 transition={{ duration: 0.5 }}
               >
-                <VerbCard verb={currentVerb} onNext={getRandomVerb} />
+                <VerbCard verb={currentVerb} onNext={() => getRandomVerb(verbs)} />
               </motion.div>
             )}
           </AnimatePresence>

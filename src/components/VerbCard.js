@@ -31,7 +31,7 @@ function VerbCard({ verb, onNext }) {
   };
 
   return (
-    <Card raised>
+    <Card raised sx={{ mb: 4 }}>
       <CardContent>
         <Typography variant="h4" component="div" gutterBottom align="center">
           {verb.infinitive}

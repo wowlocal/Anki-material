@@ -7,9 +7,6 @@ const VerbCollectionSwitcher = ({ onCollectionChange }) => {
 
   return (
     <Box sx={{ mb: 4 }}>
-      <Typography variant="h5" component="h2" gutterBottom align="center">
-        Select Verb Collection
-      </Typography>
       <FormControl fullWidth variant="outlined">
         <InputLabel id="collection-select-label">Collection</InputLabel>
         <Select
